@@ -903,7 +903,7 @@ format_replace(struct format_tree *ft, const char *key, size_t keylen,
     char **buf, size_t *len, size_t *off)
 {
 	struct window_pane	*wp = ft->wp;
-	char			*copy, *copy0, *endptr, *ptr, *found, *new;
+	char			*copy, *copy0, *endptr, *ptr, *found, *new, *expkey;
 	char			*value, *from = NULL, *to = NULL, *left, *right;
 	size_t			 valuelen, newlen, fromlen, tolen, used;
 	long			 limit = 0;
@@ -1053,7 +1053,9 @@ format_replace(struct format_tree *ft, const char *key, size_t keylen,
 		free(found);
 	} else {
 		/* Neither: look up directly. */
-		value = format_find(ft, copy, modifiers);
+		expkey = format_expand(ft, copy);
+		value = format_find(ft, expkey, modifiers);
+		free(expkey);
 		if (value == NULL)
 			value = xstrdup("");
 	}
